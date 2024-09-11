@@ -73,48 +73,7 @@ if (isset($_SESSION["user_id"])) {
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 mb-3" id="login_submit">Login</button>
-
-                    <span>
-                        Need an Account?
-                        <a href="javascript:void(0)" id="register" class="text-light">Create an Account</a>
-                    </span>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div class="modal fade" id="register_modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="overlay loading">
-                    <i class="fas fa-2x fa-sync fa-spin"></i>
-                </div>
-                <div class="modal-header">
-                    <h5 class="modal-title">Account Settings</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form action="javascript:void(0)" id="register_form">
-                    <div class="modal-body">
-                        <div class="text-center mb-3">
-                            <img id="account_settings_image_display" class="rounded-circle" alt="User Image" style="width: 100px; height: 100px;">
-                        </div>
-                        <div class="form-group text-center">
-                            <label for="account_settings_image">Upload Image</label>
-                            <input type="file" class="form-control-file" id="account_settings_image" accept="image/*">
-                        </div>
-                        <div class="form-group">
-                            <label for="account_settings_name">Name</label>
-                            <input type="text" class="form-control" id="account_settings_name" placeholder="Enter your name" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" id="account_settings_submit">Save changes</button>
-                    </div>
+                    <button type="submit" class="btn btn-primary w-100" id="login_submit">Login</button>
                 </form>
             </div>
         </div>
