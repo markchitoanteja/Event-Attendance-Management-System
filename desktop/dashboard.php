@@ -1,4 +1,6 @@
 <?php
+require_once "../check_device.php";
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -9,7 +11,7 @@ if (!isset($_SESSION["user_id"])) {
         "message" => "You must login first!",
     ];
 
-    header("location: login");
+    header("location: " . $device . "/login");
 } else {
     $_SESSION["title"] = "Dashboard";
     $_SESSION["current_page"] = "dashboard";
@@ -29,7 +31,7 @@ if (!isset($_SESSION["user_id"])) {
             </div>
         </div>
     </div>
-    
+
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -91,7 +93,7 @@ if (!isset($_SESSION["user_id"])) {
                     </div>
                 </div>
             </div>
-            
+
             <!-- Calendar and Recent Activities -->
             <div class="row">
                 <!-- Recent Activities -->

@@ -16,24 +16,24 @@ $admin = $result->fetch_assoc();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="shortcut icon" href="static/dist/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../static/dist/img/favicon.ico" type="image/x-icon">
 
     <title>Event Attendance Management System | <?= $_SESSION["title"] ?></title>
 
-    <link rel="stylesheet" href="static/plugins/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-    <link rel="stylesheet" href="static/plugins/sweetalert2/css/sweetalert2.min.css">
-    <link rel="stylesheet" href="static/plugins/datatables/css/dataTables.bootstrap4.css">
-    <link rel="stylesheet" href="static/plugins/select2/css/select2.min.css">
-    <link rel="stylesheet" href="static/plugins/select2/css/select2-bootstrap4.min.css">
-    <link rel="stylesheet" href="static/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="static/dist/css/fonts.min.css">
+    <link rel="stylesheet" href="../static/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <link rel="stylesheet" href="../static/plugins/sweetalert2/css/sweetalert2.min.css">
+    <link rel="stylesheet" href="../static/plugins/datatables/css/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="../static/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="../static/plugins/select2/css/select2-bootstrap4.min.css">
+    <link rel="stylesheet" href="../static/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../static/dist/css/fonts.min.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed <?= isset($_SESSION["mode"]) && $_SESSION["mode"] == "dark" ? "dark-mode" : null ?>">
     <div class="wrapper">
         <div class="preloader flex-column justify-content-center align-items-center">
-            <img class="animation__wobble" src="static/dist/img/logo.png" alt="ESSU Logo" height="60" width="60">
+            <img class="animation__wobble" src="../static/dist/img/logo.png" alt="ESSU Logo" height="60" width="60">
             <span>ESSU Can-Avid</span>
         </div>
 
@@ -68,14 +68,14 @@ $admin = $result->fetch_assoc();
 
         <aside class="main-sidebar sidebar-<?= isset($_SESSION["mode"]) && $_SESSION["mode"] == "dark" ? "dark" : "light" ?>-primary elevation-4">
             <a href="" class="brand-link">
-                <img src="static/dist/img/logo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <img src="../static/dist/img/logo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Event Attendance</span>
             </a>
 
             <div class="sidebar">
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img src="static/uploads/admin/<?= $admin["image"] ?>" class="img-circle elevation-2" alt="User Image">
+                        <img src="../static/uploads/admin/<?= $admin["image"] ?>" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
                         <span class="d-block text-truncate"><?= $admin["name"] ?></span>

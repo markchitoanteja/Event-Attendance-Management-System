@@ -68,16 +68,16 @@
             var notification = <?= isset($_SESSION["notification"]) ? json_encode($_SESSION["notification"]) : json_encode(null) ?>;
         </script>
 
-        <script src="static/plugins/jquery/jquery.min.js"></script>
-        <script src="static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-        <script src="static/plugins/sweetalert2/js/sweetalert2.min.js"></script>
-        <script src="static/plugins/datatables/js/dataTables.min.js"></script>
-        <script src="static/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
-        <script src="static/plugins/inputmask/inputmask.min.js"></script>
-        <script src="static/plugins/select2/js/select2.full.min.js"></script>
-        <script src="static/dist/js/adminlte.min.js"></script>
-        <script src="static/dist/js/main.js?v=1.0.3"></script>
+        <script src="../static/plugins/jquery/jquery.min.js"></script>
+        <script src="../static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="../static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+        <script src="../static/plugins/sweetalert2/js/sweetalert2.min.js"></script>
+        <script src="../static/plugins/datatables/js/dataTables.min.js"></script>
+        <script src="../static/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+        <script src="../static/plugins/inputmask/inputmask.min.js"></script>
+        <script src="../static/plugins/select2/js/select2.full.min.js"></script>
+        <script src="../static/dist/js/adminlte.min.js"></script>
+        <script src="../static/dist/js/main.js?v=1.0.3"></script>
         </body>
 
         </html>

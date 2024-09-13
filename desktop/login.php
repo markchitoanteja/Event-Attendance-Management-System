@@ -15,15 +15,15 @@ if (isset($_SESSION["user_id"])) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="shortcut icon" href="static/dist/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../static/dist/img/favicon.ico" type="image/x-icon">
 
     <title>Event Attendance Management System | Login</title>
 
-    <link rel="stylesheet" href="static/dist/css/fonts.min.css">
-    <link rel="stylesheet" href="static/plugins/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="static/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <link rel="stylesheet" href="static/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="static/dist/css/login.css?v=1.0.1">
+    <link rel="stylesheet" href="../static/dist/css/fonts.min.css">
+    <link rel="stylesheet" href="../static/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../static/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="../static/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../static/dist/css/login.css?v=1.0.1">
 </head>
 
 <body class="hold-transition login-page">
@@ -36,7 +36,7 @@ if (isset($_SESSION["user_id"])) {
 
         <div class="card glass-card">
             <div class="card-header text-center">
-                <img src="static/dist/img/logo.png" alt="ESSU Logo" style="width: 128px; height: 128px;">
+                <img src="../static/dist/img/logo.png" alt="ESSU Logo" style="width: 128px; height: 128px;">
 
                 <div class="h3 mt-3">
                     <b>Event Attendance Management System</b>
@@ -79,10 +79,10 @@ if (isset($_SESSION["user_id"])) {
         </div>
     </div>
 
-    <script src="static/plugins/jquery/jquery.min.js"></script>
-    <script src="static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="static/dist/js/adminlte.min.js"></script>
-    <script src="static/dist/js/login.js?v=1.0.2"></script>
+    <script src="../static/plugins/jquery/jquery.min.js"></script>
+    <script src="../static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/dist/js/adminlte.min.js"></script>
+    <script src="../static/dist/js/login.js?v=1.0.2"></script>
 </body>
 
 </html>

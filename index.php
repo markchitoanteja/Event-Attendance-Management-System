@@ -1,10 +1,12 @@
 <?php
+require_once "check_device.php";
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
 if (isset($_SESSION["user_id"])) {
-    header("location: dashboard");
+    header("location: " . $device . "/dashboard");
 } else {
-    header("location: login");
+    header("location: " . $device . "/login");
 }
