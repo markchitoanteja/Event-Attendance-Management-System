@@ -28,6 +28,11 @@ class Model
         return $this->connection->real_escape_string($value);
     }
 
+    public function last_inserted_id()
+    {
+        return $this->connection->insert_id;
+    }
+
     public function close()
     {
         $this->connection->close();

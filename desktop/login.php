@@ -29,7 +29,7 @@ if (isset($_SESSION["user_id"])) {
 <body class="hold-transition login-page">
     <div class="login-box">
         <?php if (isset($_SESSION["notification"])): ?>
-            <div class="alert <?= $_SESSION["notification"]["type"] ?> text-center"><?= $_SESSION["notification"]["message"] ?></div>
+            <div class="alert <?= $_SESSION["notification"]["type"] ?> text-center" id="notification"><?= $_SESSION["notification"]["message"] ?></div>
         <?php endif ?>
 
         <div class="alert alert-danger text-center d-none" id="login_notification">Invalid Username or Password</div>

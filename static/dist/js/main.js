@@ -7,6 +7,23 @@ jQuery(document).ready(function () {
         });
     }
 
+    $('.select2').select2();
+
+    $('[data-mask]').inputmask();
+
+    $(".datatable").DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "ordering": false
+    })
+
+    $(".datatable-no-fiter").DataTable({
+        "filter": false,
+        "paging": true,
+        "lengthChange": false,
+        "ordering": false
+    })
+
     $("#mode").click(function () {
         let new_mode = "";
 
@@ -83,7 +100,7 @@ jQuery(document).ready(function () {
                 if (response) {
                     $("#account_settings_name").val(response.name);
                     $("#account_settings_username").val(response.username);
-                    $("#account_settings_image_display").attr("src", "static/uploads/admin/" + response.image);
+                    $("#account_settings_image_display").attr("src", "../static/uploads/admin/" + response.image);
 
                     $("#account_settings_id").val(response.id);
                     $("#account_settings_old_username").val(response.username);
@@ -112,7 +129,7 @@ jQuery(document).ready(function () {
                 URL.revokeObjectURL(imageURL);
             });
         } else {
-            displayImage.attr('src', base_url + "public/dist/img/uploads/admin/" + $("#account_settings_old_image").val());
+            displayImage.attr('src', "../static/uploads/admin/" + $("#account_settings_old_image").val());
         }
     })
 
@@ -219,5 +236,191 @@ jQuery(document).ready(function () {
         $("#account_settings_password").removeClass("is-invalid");
         $("#account_settings_confirm_password").removeClass("is-invalid");
         $("#error_account_settings_password").addClass("d-none");
+    })
+
+    $("#new_attendee_image").change(function (event) {
+        var displayImage = $('#new_attendee_image_display');
+        var file = event.target.files[0];
+
+        if (file) {
+            var imageURL = URL.createObjectURL(file);
+
+            displayImage.attr('src', imageURL);
+
+            displayImage.on('load', function () {
+                URL.revokeObjectURL(imageURL);
+            });
+        } else {
+            displayImage.attr('src', "../static/uploads/admin/default-user-image.png");
+        }
+    })
+
+    $("#new_attendee_form").submit(function () {
+        const image = $("#new_attendee_image")[0].files[0];
+        const student_number = $("#new_attendee_student_number").val();
+        const course = $("#new_attendee_course").val();
+        const year = $("#new_attendee_year").val();
+        const section = $("#new_attendee_section").val();
+        const first_name = $("#new_attendee_first_name").val();
+        const middle_name = $("#new_attendee_middle_name").val();
+        const last_name = $("#new_attendee_last_name").val();
+        const birthday = $("#new_attendee_birthday").val();
+        const mobile_number = $("#new_attendee_mobile_number").val().replace(/\D/g, '');
+        const email = $("#new_attendee_email").val();
+        const address = $("#new_attendee_address").val();
+        const username = $("#new_attendee_username").val();
+        const password = $("#new_attendee_password").val();
+        const confirm_password = $("#new_attendee_confirm_password").val();
+
+        let errors = 0
+
+        if (password != confirm_password) {
+            $("#new_attendee_password").addClass("is-invalid");
+            $("#new_attendee_confirm_password").addClass("is-invalid");
+            $("#error_new_attendee_password").removeClass("d-none");
+
+            $("#new_attendee_password").focus();
+
+            errors++;
+        }
+
+        if (mobile_number.length != 11) {
+            $("#new_attendee_mobile_number").addClass("is-invalid");
+            $("#error_new_attendee_mobile_number").removeClass("d-none");
+
+            $("#new_attendee_mobile_number").focus();
+
+            errors++;
+        }
+
+        if (!errors) {
+            $(".loading").removeClass("d-none");
+            $("#new_attendee_submit").text("Please wait...");
+            $("#new_attendee_submit").attr("disabled", true);
+
+            var formData = new FormData();
+
+            formData.append('image', image);
+            formData.append('student_number', student_number);
+            formData.append('course', course);
+            formData.append('year', year);
+            formData.append('section', section);
+            formData.append('first_name', first_name);
+            formData.append('middle_name', middle_name);
+            formData.append('last_name', last_name);
+            formData.append('birthday', birthday);
+            formData.append('mobile_number', mobile_number);
+            formData.append('email', email);
+            formData.append('address', address);
+            formData.append('username', username);
+            formData.append('password', password);
+
+            formData.append('add_attendee', true);
+
+            $.ajax({
+                url: 'server',
+                data: formData,
+                type: 'POST',
+                dataType: 'JSON',
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.username && response.student_number) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        $(".loading").addClass("d-none");
+                        $("#new_attendee_submit").text("Submit");
+                        $("#new_attendee_submit").removeAttr("disabled");
+
+                        if (!response.username) {
+                            $("#new_attendee_username").addClass("is-invalid");
+                            $("#error_new_attendee_username").removeClass("d-none");
+
+                            $("#new_attendee_username").focus();
+                        }
+
+                        if (!response.student_number) {
+                            $("#new_attendee_student_number").addClass("is-invalid");
+                            $("#error_new_attendee_student_number").removeClass("d-none");
+
+                            $("#new_attendee_student_number").focus();
+                        }
+                    }
+                },
+                error: function (_, _, error) {
+                    console.error(error);
+                }
+            });
+        }
+    })
+
+    $("#new_attendee_student_number").keydown(function () {
+        $("#new_attendee_student_number").removeClass("is-invalid");
+        $("#error_new_attendee_student_number").addClass("d-none");
+    })
+
+    $("#new_attendee_username").keydown(function () {
+        $("#new_attendee_username").removeClass("is-invalid");
+        $("#error_new_attendee_username").addClass("d-none");
+    })
+
+    $("#new_attendee_mobile_number").keydown(function () {
+        $("#new_attendee_mobile_number").removeClass("is-invalid");
+        $("#error_new_attendee_mobile_number").addClass("d-none");
+    })
+
+    $("#new_attendee_password").keydown(function () {
+        $("#new_attendee_password").removeClass("is-invalid");
+        $("#new_attendee_confirm_password").removeClass("is-invalid");
+        $("#error_new_attendee_password").addClass("d-none");
+    })
+
+    $("#new_attendee_confirm_password").keydown(function () {
+        $("#new_attendee_password").removeClass("is-invalid");
+        $("#new_attendee_confirm_password").removeClass("is-invalid");
+        $("#error_new_attendee_password").addClass("d-none");
+    })
+
+    $(document).on("click", ".delete_attendee", function () {
+        const attendee_id = $(this).attr("attendee_id");
+
+        console.log(attendee_id);
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var formData = new FormData();
+
+                formData.append('attendee_id', attendee_id);
+
+                formData.append('delete_attendee', true);
+
+                $.ajax({
+                    url: 'server',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response) {
+                            location.reload();
+                        }
+                    },
+                    error: function (_, _, error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
     })
 })
