@@ -100,7 +100,7 @@ jQuery(document).ready(function () {
                 if (response) {
                     $("#account_settings_name").val(response.name);
                     $("#account_settings_username").val(response.username);
-                    $("#account_settings_image_display").attr("src", "../static/uploads/admin/" + response.image);
+                    $("#account_settings_image_display").attr("src", "../static/uploads/" + response.image);
 
                     $("#account_settings_id").val(response.id);
                     $("#account_settings_old_username").val(response.username);
@@ -129,7 +129,7 @@ jQuery(document).ready(function () {
                 URL.revokeObjectURL(imageURL);
             });
         } else {
-            displayImage.attr('src', "../static/uploads/admin/" + $("#account_settings_old_image").val());
+            displayImage.attr('src', "../static/uploads/" + $("#account_settings_old_image").val());
         }
     })
 
@@ -238,23 +238,6 @@ jQuery(document).ready(function () {
         $("#error_account_settings_password").addClass("d-none");
     })
 
-    $("#new_attendee_image").change(function (event) {
-        var displayImage = $('#new_attendee_image_display');
-        var file = event.target.files[0];
-
-        if (file) {
-            var imageURL = URL.createObjectURL(file);
-
-            displayImage.attr('src', imageURL);
-
-            displayImage.on('load', function () {
-                URL.revokeObjectURL(imageURL);
-            });
-        } else {
-            displayImage.attr('src', "../static/uploads/admin/default-user-image.png");
-        }
-    })
-
     $("#new_attendee_form").submit(function () {
         const image = $("#new_attendee_image")[0].files[0];
         const student_number = $("#new_attendee_student_number").val();
@@ -356,6 +339,23 @@ jQuery(document).ready(function () {
         }
     })
 
+    $("#new_attendee_image").change(function (event) {
+        var displayImage = $('#new_attendee_image_display');
+        var file = event.target.files[0];
+
+        if (file) {
+            var imageURL = URL.createObjectURL(file);
+
+            displayImage.attr('src', imageURL);
+
+            displayImage.on('load', function () {
+                URL.revokeObjectURL(imageURL);
+            });
+        } else {
+            displayImage.attr('src', "../static/uploads/default-user-image.png");
+        }
+    })
+
     $("#new_attendee_student_number").keydown(function () {
         $("#new_attendee_student_number").removeClass("is-invalid");
         $("#error_new_attendee_student_number").addClass("d-none");
@@ -385,8 +385,6 @@ jQuery(document).ready(function () {
 
     $(document).on("click", ".delete_attendee", function () {
         const attendee_id = $(this).attr("attendee_id");
-
-        console.log(attendee_id);
 
         Swal.fire({
             title: "Are you sure?",
@@ -422,5 +420,239 @@ jQuery(document).ready(function () {
                 });
             }
         });
+    })
+
+    $(document).on("click", ".edit_attendee", function () {
+        const attendee_id = $(this).attr("attendee_id");
+
+        $("#update_attendee_modal").modal("show");
+
+        var formData = new FormData();
+
+        formData.append('attendee_id', attendee_id);
+
+        formData.append('get_attendee_data', true);
+
+        $.ajax({
+            url: 'server',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response) {
+                    $("#update_attendee_image_display").attr("src", "../static/uploads/" + response.image);
+                    $("#update_attendee_student_number").val(response.student_number);
+                    $("#update_attendee_course").val(response.course);
+                    $("#update_attendee_year").val(response.year);
+                    $("#update_attendee_section").val(response.section);
+                    $("#update_attendee_first_name").val(response.first_name);
+                    $("#update_attendee_middle_name").val(response.middle_name);
+                    $("#update_attendee_last_name").val(response.last_name);
+                    $("#update_attendee_birthday").val(response.birthday);
+                    $("#update_attendee_mobile_number").val(response.mobile_number);
+                    $("#update_attendee_email").val(response.email);
+                    $("#update_attendee_address").val(response.address);
+                    $("#update_attendee_username").val(response.username);
+
+                    $("#update_attendee_id").val(attendee_id);
+                    $("#update_attendee_old_student_number").val(response.student_number);
+                    $("#update_attendee_old_username").val(response.username);
+                    $("#update_attendee_old_password").val(response.password);
+                    $("#update_attendee_old_image").val(response.image);
+
+                    $(".loading").addClass("d-none");
+                }
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
+        });
+    })
+
+    $("#update_attendee_form").submit(function () {
+        const image_input = $("#update_attendee_image")[0];
+        const student_number = $("#update_attendee_student_number").val();
+        const course = $("#update_attendee_course").val();
+        const year = $("#update_attendee_year").val();
+        const section = $("#update_attendee_section").val();
+        const first_name = $("#update_attendee_first_name").val();
+        const middle_name = $("#update_attendee_middle_name").val();
+        const last_name = $("#update_attendee_last_name").val();
+        const birthday = $("#update_attendee_birthday").val();
+        const mobile_number = $("#update_attendee_mobile_number").val().replace(/\D/g, '');
+        const email = $("#update_attendee_email").val();
+        const address = $("#update_attendee_address").val();
+        const username = $("#update_attendee_username").val();
+        const password = $("#update_attendee_password").val();
+        const confirm_password = $("#update_attendee_confirm_password").val();
+
+        const id = $("#update_attendee_id").val();
+        const old_student_number = $("#update_attendee_old_student_number").val();
+        const old_username = $("#update_attendee_old_username").val();
+        const old_password = $("#update_attendee_old_password").val();
+        const old_image = $("#update_attendee_old_image").val();
+
+        let errors = 0
+        let is_new_student_number = false;
+        let is_new_username = false;
+        let is_new_password = false;
+        let is_new_image = false;
+
+        if (image_input.files.length > 0) {
+            var image_file = image_input.files[0];
+
+            is_new_image = true;
+        }
+
+        if (password && confirm_password) {
+            is_new_password = true;
+        }
+
+        if (username != old_username) {
+            is_new_username = true;
+        }
+
+        if (student_number != old_student_number) {
+            is_new_student_number = true;
+        }
+
+        if (password != confirm_password) {
+            $("#update_attendee_password").addClass("is-invalid");
+            $("#update_attendee_confirm_password").addClass("is-invalid");
+            $("#error_update_attendee_password").removeClass("d-none");
+
+            $("#update_attendee_password").focus();
+
+            errors++;
+        }
+
+        if (mobile_number.length != 11) {
+            $("#update_attendee_mobile_number").addClass("is-invalid");
+            $("#error_update_attendee_mobile_number").removeClass("d-none");
+
+            $("#update_attendee_mobile_number").focus();
+
+            errors++;
+        }
+
+        if (!errors) {
+            $(".loading").removeClass("d-none");
+            $("#update_attendee_submit").text("Please wait...");
+            $("#update_attendee_submit").attr("disabled", true);
+
+            var formData = new FormData();
+
+            formData.append('image_file', image_file);
+            formData.append('student_number', student_number);
+            formData.append('course', course);
+            formData.append('year', year);
+            formData.append('section', section);
+            formData.append('first_name', first_name);
+            formData.append('middle_name', middle_name);
+            formData.append('last_name', last_name);
+            formData.append('birthday', birthday);
+            formData.append('mobile_number', mobile_number);
+            formData.append('email', email);
+            formData.append('address', address);
+            formData.append('username', username);
+            formData.append('password', password);
+
+            formData.append('id', id);
+            formData.append('old_student_number', old_student_number);
+            formData.append('old_username', old_username);
+            formData.append('old_password', old_password);
+            formData.append('old_image', old_image);
+
+            formData.append('is_new_student_number', is_new_student_number);
+            formData.append('is_new_username', is_new_username);
+            formData.append('is_new_password', is_new_password);
+            formData.append('is_new_image', is_new_image);
+
+            formData.append('update_attendee', true);
+
+            $.ajax({
+                url: 'server',
+                data: formData,
+                type: 'POST',
+                dataType: 'JSON',
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.username && response.student_number) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        $(".loading").addClass("d-none");
+                        $("#update_attendee_submit").text("Submit");
+                        $("#update_attendee_submit").removeAttr("disabled");
+
+                        if (!response.username) {
+                            $("#update_attendee_username").addClass("is-invalid");
+                            $("#error_update_attendee_username").removeClass("d-none");
+
+                            $("#update_attendee_username").focus();
+                        }
+
+                        if (!response.student_number) {
+                            $("#update_attendee_student_number").addClass("is-invalid");
+                            $("#error_update_attendee_student_number").removeClass("d-none");
+
+                            $("#update_attendee_student_number").focus();
+                        }
+                    }
+                },
+                error: function (_, _, error) {
+                    console.error(error);
+                }
+            });
+        }
+    })
+
+    $("#update_attendee_image").change(function (event) {
+        var displayImage = $('#update_attendee_image_display');
+        var old_image = $('#update_attendee_old_image').val();
+        var file = event.target.files[0];
+
+        if (file) {
+            var imageURL = URL.createObjectURL(file);
+
+            displayImage.attr('src', imageURL);
+
+            displayImage.on('load', function () {
+                URL.revokeObjectURL(imageURL);
+            });
+        } else {
+            displayImage.attr('src', "../static/uploads/" + old_image);
+        }
+    })
+
+    $("#update_attendee_student_number").keydown(function () {
+        $("#update_attendee_student_number").removeClass("is-invalid");
+        $("#error_update_attendee_student_number").addClass("d-none");
+    })
+
+    $("#update_attendee_username").keydown(function () {
+        $("#update_attendee_username").removeClass("is-invalid");
+        $("#error_update_attendee_username").addClass("d-none");
+    })
+
+    $("#update_attendee_mobile_number").keydown(function () {
+        $("#update_attendee_mobile_number").removeClass("is-invalid");
+        $("#error_update_attendee_mobile_number").addClass("d-none");
+    })
+
+    $("#update_attendee_password").keydown(function () {
+        $("#update_attendee_password").removeClass("is-invalid");
+        $("#update_attendee_confirm_password").removeClass("is-invalid");
+        $("#error_update_attendee_password").addClass("d-none");
+    })
+
+    $("#update_attendee_confirm_password").keydown(function () {
+        $("#update_attendee_password").removeClass("is-invalid");
+        $("#update_attendee_confirm_password").removeClass("is-invalid");
+        $("#error_update_attendee_password").addClass("d-none");
     })
 })

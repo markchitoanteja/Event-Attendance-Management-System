@@ -120,7 +120,7 @@ if (isset($_POST["update_admin"])) {
         }
 
         if ($is_new_image == "true") {
-            $image = upload_image("../static/uploads/admin/", $image_file);
+            $image = upload_image("../static/uploads/", $image_file);
         }
 
         $name = $model->escape($name);
@@ -185,7 +185,7 @@ if (isset($_POST["add_attendee"])) {
     if (!$errors) {
         $current_date = date("Y-m-d H:i:s");
         $uuid = generateUUIDv4();
-        $image = upload_image("../static/uploads/admin/", $image);
+        $image = upload_image("../static/uploads/", $image);
         $password = password_hash($password, PASSWORD_BCRYPT);
         $name = trim($first_name . ' ' . (!empty($middle_name) ? substr($middle_name, 0, 1) . '. ' : '') . $last_name);
 
@@ -200,6 +200,99 @@ if (isset($_POST["add_attendee"])) {
         $_SESSION["notification"] = [
             "title" => "Success!",
             "text" => "An attendee has been added to the database.",
+            "icon" => "success",
+        ];
+    }
+
+    $response = [
+        "student_number" => $student_number_ok,
+        "username" => $username_ok,
+    ];
+
+    echo json_encode($response);
+}
+
+if (isset($_POST["update_attendee"])) {
+    $image_file = isset($_FILES["image_file"]) ? $_FILES["image_file"] : null;
+    $student_number = $_POST["student_number"];
+    $course = $_POST["course"];
+    $year = $_POST["year"];
+    $section = $_POST["section"];
+    $first_name = $_POST["first_name"];
+    $middle_name = $_POST["middle_name"];
+    $last_name = $_POST["last_name"];
+    $birthday = $_POST["birthday"];
+    $mobile_number = $_POST["mobile_number"];
+    $email = $_POST["email"];
+    $address = $_POST["address"];
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    $id = $_POST["id"];
+    $old_student_number = $_POST["old_student_number"];
+    $old_username = $_POST["old_username"];
+    $old_password = $_POST["old_password"];
+    $old_image = $_POST["old_image"];
+
+    $is_new_student_number = $_POST["is_new_student_number"];
+    $is_new_username = $_POST["is_new_username"];
+    $is_new_password = $_POST["is_new_password"];
+    $is_new_image = $_POST["is_new_image"];
+
+    $errors = 0;
+    $student_number_ok = true;
+    $username_ok = true;
+
+    $student_number = $model->escape($student_number);
+    $username = $model->escape($username);
+
+    if ($is_new_student_number == "true") {
+        $query = "SELECT * FROM `attendees` WHERE `student_number` = '" . $student_number . "'";
+        $result = $model->query($query);
+
+        if ($result->num_rows > 0) {
+            $student_number_ok = false;
+
+            $errors++;
+        }
+    }
+
+    if ($is_new_username == "true") {
+        $query_2 = "SELECT * FROM `users` WHERE `username` = '" . $username . "'";
+        $result_2 = $model->query($query_2);
+
+        if ($result_2->num_rows > 0) {
+            $username_ok = false;
+
+            $errors++;
+        }
+    }
+
+    if (!$errors) {
+        if ($is_new_image == "true") {
+            $image = upload_image("../static/uploads/", $image_file);
+        } else {
+            $image = $old_image;
+        }
+
+        if ($is_new_password == "true") {
+            $password = password_hash($password, PASSWORD_BCRYPT);
+        } else {
+            $password = $old_password;
+        }
+
+        $current_date = date("Y-m-d H:i:s");
+        $name = trim($first_name . ' ' . (!empty($middle_name) ? substr($middle_name, 0, 1) . '. ' : '') . $last_name);
+
+        $query_3 = "UPDATE `users` SET `name`='" . $name . "', `username`='" . $username . "', `password`='" . $password . "', `image`='" . $image . "', `updated_at`='" . $current_date . "' WHERE `id`='" . $id . "'";
+        $model->query($query_3);
+
+        $query_4 = "UPDATE `attendees` SET `student_number`='" . $student_number . "', `course`='" . $course . "', `year`='" . $year . "', `section`='" . $section . "', `first_name`='" . $first_name . "', `middle_name`='" . $middle_name . "', `last_name`='" . $last_name . "', `birthday`='" . $birthday . "', `mobile_number`='" . $mobile_number . "', `email`='" . $email . "', `address`='" . $address . "' WHERE `account_id`='" . $id . "'";
+        $model->query($query_4);
+
+        $_SESSION["notification"] = [
+            "title" => "Success!",
+            "text" => "An attendee has been updated successfully.",
             "icon" => "success",
         ];
     }
@@ -228,6 +321,17 @@ if (isset($_POST["delete_attendee"])) {
     ];
 
     echo json_encode(true);
+}
+
+if (isset($_POST["get_attendee_data"])) {
+    $attendee_id = $_POST["attendee_id"];
+
+    $query = "SELECT * FROM `users` JOIN `attendees` ON `users`.`id` = `attendees`.`account_id` WHERE `users`.`id` = '" . $attendee_id . "'";
+    $result = $model->query($query);
+
+    $attendee = $result->fetch_assoc();
+
+    echo json_encode($attendee);
 }
 
 if (isset($_POST["logout"])) {
