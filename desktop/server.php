@@ -1,5 +1,11 @@
 <?php
 require_once 'model.php';
+require_once '../third-party/phpmailer/PHPMailer.php';
+require_once '../third-party/phpmailer/SMTP.php';
+require_once '../third-party/phpmailer/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 $model = new Model('localhost', 'root', '', 'event_attendance_management_system');
 
@@ -7,6 +13,34 @@ date_default_timezone_set('Asia/Manila');
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
+}
+
+function send_email($name, $email, $subject, $message)
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'essucanavid1960@gmail.com';
+        $mail->Password = 'imdztqqgoaprrwmh';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom('essucanavid1960@gmail.com', 'ESSU Can-Avid Campus');
+        $mail->addAddress($email, $name);
+
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+
+        $mail->send();
+
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
 }
 
 function generateUUIDv4()
@@ -332,6 +366,101 @@ if (isset($_POST["get_attendee_data"])) {
     $attendee = $result->fetch_assoc();
 
     echo json_encode($attendee);
+}
+
+if (isset($_POST["send_email"])) {
+    $name = $_POST["name"];
+    $email = $_POST["email"];
+    $subject = $_POST["subject"];
+    $message = $_POST["message"];
+
+    $message = str_replace("\n", "<br>", $message);
+
+    $is_sent = send_email($name, $email, $subject, $message);
+
+    if ($is_sent) {
+        $_SESSION["notification"] = [
+            "title" => "Success!",
+            "text" => "Message has been sent successfully.",
+            "icon" => "success",
+        ];
+    } else {
+        $_SESSION["notification"] = [
+            "title" => "Oops...",
+            "text" => "There was an error while sending your message",
+            "icon" => "error",
+        ];
+    }
+
+    echo json_encode(true);
+}
+
+if (isset($_POST["add_event"])) {
+    $uuid = generateUUIDv4();
+    $name = $_POST["name"];
+    $date = $_POST["date"];
+    $attendees = $_POST["attendees"];
+    $status = $_POST["status"];
+
+    $current_date = date("Y-m-d H:i:s");
+
+    $query = "INSERT INTO `events` (`uuid`, `name`, `date`, `attendees`, `status`, `created_at`, `updated_at`) VALUES ('" . $uuid . "', '" . $name . "', '" . $date . "', '" . $attendees . "', '" . $status . "', '" . $current_date . "', '" . $current_date . "')";
+    $model->query($query);
+
+    $_SESSION["notification"] = [
+        "title" => "Success!",
+        "text" => "An event has beed added successfully to the database.",
+        "icon" => "success",
+    ];
+
+    echo json_encode(true);
+}
+
+if (isset($_POST["get_event_data"])) {
+    $event_id = $_POST["event_id"];
+
+    $query = "SELECT * FROM `events` WHERE `id`='" . $event_id . "'";
+    $result = $model->query($query);
+
+    $attendee = $result->fetch_assoc();
+
+    echo json_encode($attendee);
+}
+
+if (isset($_POST["update_event"])) {
+    $id = $_POST["id"];
+    $name = $_POST["name"];
+    $date = $_POST["date"];
+    $attendees = $_POST["attendees"];
+    $status = $_POST["status"];
+
+    $current_date = date("Y-m-d H:i:s");
+
+    $query = "UPDATE `events` SET `name`='" . $name . "', `date`='" . $date . "', `attendees`='" . $attendees . "', `status`='" . $status . "', `updated_at`='" . $current_date . "' WHERE `id`='" . $id . "'";
+    $model->query($query);
+
+    $_SESSION["notification"] = [
+        "title" => "Success!",
+        "text" => "An event has beed updated successfully.",
+        "icon" => "success",
+    ];
+
+    echo json_encode(true);
+}
+
+if (isset($_POST["delete_event"])) {
+    $event_id = $_POST["event_id"];
+
+    $query = "DELETE FROM `events` WHERE `id` = '" . $event_id . "'";
+    $model->query($query);
+
+    $_SESSION["notification"] = [
+        "title" => "Success!",
+        "text" => "An event has been deleted from the database.",
+        "icon" => "success",
+    ];
+
+    echo json_encode(true);
 }
 
 if (isset($_POST["logout"])) {

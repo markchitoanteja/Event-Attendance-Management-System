@@ -24,16 +24,25 @@ if ($device == "mobile") {
 
         exit;
     } else {
-        $_SESSION["title"] = "Attendee Directory";
-        $_SESSION["current_page"] = "attendee_directory";
+        $_SESSION["title"] = "Events Management";
+        $_SESSION["current_page"] = "events_management";
 
-        $attendees = null;
+        $events = null;
 
-        $query = "SELECT * FROM `attendees` ORDER BY `id` DESC";
+        $query = "SELECT * FROM `events` ORDER BY `status` DESC, `date` ASC";
         $result = $model->query($query);
 
         if ($result->num_rows > 0) {
-            $attendees = $result->fetch_all(MYSQLI_ASSOC);
+            $events = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
+        $attendees = null;
+
+        $query_2 = "SELECT * FROM `attendees` ORDER BY `first_name` ASC";
+        $result_2 = $model->query($query_2);
+
+        if ($result_2->num_rows > 0) {
+            $attendees = $result_2->fetch_all(MYSQLI_ASSOC);
         }
     }
 }
@@ -47,13 +56,13 @@ if ($device == "mobile") {
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Attendee Directory</h1>
+                    <h1 class="m-0">Events Management</h1>
                 </div>
                 <div class="col-sm-6">
                     <div class="float-sm-right">
-                        <button class="btn btn-primary" data-toggle="modal" data-target="#new_attendee_modal">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#new_event_modal">
                             <i class="fas fa-plus mr-1"></i>
-                            New Attendee
+                            New Event
                         </button>
                     </div>
                 </div>
@@ -69,23 +78,22 @@ if ($device == "mobile") {
                     <table class="table table-bordered table-striped datatable">
                         <thead>
                             <tr>
-                                <th>Student Number</th>
-                                <th>Student Name</th>
-                                <th>Course, Year, and Section</th>
+                                <th>Event Name</th>
+                                <th>Date and Time</th>
+                                <th>Status</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if ($attendees): ?>
-                                <?php foreach ($attendees as $attendee): ?>
+                            <?php if ($events): ?>
+                                <?php foreach ($events as $event): ?>
                                     <tr>
-                                        <td><?= $attendee["student_number"] ?></td>
-                                        <td><?= trim($attendee["first_name"] . ' ' . (!empty($attendee["middle_name"]) ? substr($attendee["middle_name"], 0, 1) . '. ' : '') . $attendee["last_name"]) ?></td>
-                                        <td><?= $attendee["course"] . " " . $attendee["year"][0] . "-" . $attendee["section"] ?></td>
+                                        <td><?= $event["name"] ?></td>
+                                        <td><?= (new DateTime($event["date"]))->format('F j, Y g:i A') ?></td>
+                                        <td class="<?= $event["status"] == "Upcoming" ? "text-primary" : "text-danger" ?>"><?= $event["status"] ?></td>
                                         <td class="text-center">
-                                            <i class="fas fa-envelope text-primary mr-2 send_email" role="button" title="Send Email to this attendee" attendee_id="<?= $attendee["account_id"] ?>"></i>
-                                            <i class="fas fa-pencil-alt text-success mr-2 edit_attendee" role="button" title="Edit Attendee Information" attendee_id="<?= $attendee["account_id"] ?>"></i>
-                                            <i class="fas fa-trash-alt text-danger delete_attendee" role="button" title="Delete Attendee" attendee_id="<?= $attendee["account_id"] ?>"></i>
+                                            <i class="fas fa-pencil-alt text-success mr-2 edit_event" role="button" title="Edit Event Information" event_id="<?= $event["id"] ?>"></i>
+                                            <i class="fas fa-trash-alt text-danger delete_event" role="button" title="Delete Event" event_id="<?= $event["id"] ?>"></i>
                                         </td>
                                     </tr>
                                 <?php endforeach ?>

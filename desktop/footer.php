@@ -203,6 +203,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Update Attendee Modal -->
             <div class="modal fade" id="update_attendee_modal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -347,6 +348,146 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Send Email Modal -->
+            <div class="modal fade" id="send_email_modal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="overlay loading">
+                            <i class="fas fa-2x fa-sync fa-spin"></i>
+                        </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Send Email</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="javascript:void(0)" id="send_email_form">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="send_email_email">Email</label>
+                                            <input type="email" class="form-control" id="send_email_email" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="send_email_name">Name</label>
+                                            <input type="text" class="form-control" id="send_email_name" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="send_email_subject">Subject <span class="text-muted">(Editable)</span></label>
+                                    <input type="text" class="form-control" id="send_email_subject" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="send_email_message">Message <span class="text-muted">(Editable)</span></label>
+                                    <textarea class="form-control" id="send_email_message" rows="10" required></textarea>
+                                    <small class="text-danger d-none" id="error_send_email_message">Please replace the PASSWORD part with the attendee's actual password.</small>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="hidden" id="send_email_id">
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="send_email_submit">Send Email</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endif ?>
+
+        <?php if ($_SESSION["current_page"] == "events_management"): ?>
+            <!-- New Event Modal -->
+            <div class="modal fade" id="new_event_modal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="overlay loading d-none">
+                            <i class="fas fa-2x fa-sync fa-spin"></i>
+                        </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title">New Event</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="javascript:void(0)" id="new_event_form">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="new_event_name">Event Name</label>
+                                    <input type="text" class="form-control" id="new_event_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new_event_date">Event Date</label>
+                                    <input type="datetime-local" class="form-control" id="new_event_date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new_event_attendees">Attendees</label>
+                                    <select class="select2 w-100" id="new_event_attendees" multiple="multiple" required>
+                                        <?php if ($attendees): ?>
+                                            <?php foreach ($attendees as $attendee): ?>
+                                                <option value="<?= $attendee["id"] ?>"><?= trim($attendee["first_name"] . ' ' . (!empty($attendee["middle_name"]) ? substr($attendee["middle_name"], 0, 1) . '. ' : '') . $attendee["last_name"]) ?></option>
+                                            <?php endforeach ?>
+                                        <?php endif ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="new_event_submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Event Modal -->
+            <div class="modal fade" id="update_event_modal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="overlay loading">
+                            <i class="fas fa-2x fa-sync fa-spin"></i>
+                        </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Update Event</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="javascript:void(0)" id="update_event_form">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="update_event_name">Event Name</label>
+                                    <input type="text" class="form-control" id="update_event_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="update_event_date">Event Date</label>
+                                    <input type="datetime-local" class="form-control" id="update_event_date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="update_event_attendees">Attendees</label>
+                                    <select class="select2 w-100" id="update_event_attendees" multiple="multiple" required>
+                                        <?php if ($attendees): ?>
+                                            <?php foreach ($attendees as $attendee): ?>
+                                                <option value="<?= $attendee["id"] ?>"><?= trim($attendee["first_name"] . ' ' . (!empty($attendee["middle_name"]) ? substr($attendee["middle_name"], 0, 1) . '. ' : '') . $attendee["last_name"]) ?></option>
+                                            <?php endforeach ?>
+                                        <?php endif ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="hidden" id="update_event_id">
+
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="update_event_submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         <?php endif ?>
 
         <script>
@@ -364,7 +505,7 @@
         <script src="../static/plugins/inputmask/inputmask.min.js"></script>
         <script src="../static/plugins/select2/js/select2.full.min.js"></script>
         <script src="../static/dist/js/adminlte.min.js"></script>
-        <script src="../static/dist/js/main.js?v=1.1.6"></script>
+        <script src="../static/dist/js/main.js?v=1.2.0"></script>
         </body>
 
         </html>

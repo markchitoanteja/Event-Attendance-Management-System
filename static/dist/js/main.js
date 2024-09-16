@@ -655,4 +655,256 @@ jQuery(document).ready(function () {
         $("#update_attendee_confirm_password").removeClass("is-invalid");
         $("#error_update_attendee_password").addClass("d-none");
     })
+
+    $(".send_email").click(function () {
+        const attendee_id = $(this).attr("attendee_id");
+
+        $("#send_email_modal").modal("show");
+        $(".loading").removeClass("d-none");
+
+        var formData = new FormData();
+
+        formData.append('attendee_id', attendee_id);
+
+        formData.append('get_attendee_data', true);
+
+        $.ajax({
+            url: 'server',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                const subject = "Your Login Credentials for the ESSU Can-Avid Campus Mobile Application";
+                const message = `Hi ` + response.name + `,\n\nI hope this email finds you well. Here are the credentials you can use to log in to the mobile application of the system.\n\nUsername: ` + response.username + `\nPassword: (type the password here)\n\nBest regards,\nESSU Can-Avid Campus`;
+
+                $("#send_email_email").val(response.email);
+                $("#send_email_name").val(response.name);
+                $("#send_email_subject").val(subject);
+                $("#send_email_message").val(message);
+
+                $(".loading").addClass("d-none");
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
+        });
+    })
+
+    $("#send_email_form").submit(function () {
+        const name = $("#send_email_name").val();
+        const email = $("#send_email_email").val();
+        const subject = $("#send_email_subject").val();
+        const message = $("#send_email_message").val();
+
+        if (/Password: \(type the password here\)/.test(message)) {
+            $("#send_email_message").addClass("is-invalid");
+            $("#error_send_email_message").removeClass("d-none");
+        } else {
+            $("#send_email_submit").text("Please wait...");
+            $("#send_email_submit").attr("disabled", true);
+
+            $(".loading").removeClass("d-none");
+
+            var formData = new FormData();
+
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('subject', subject);
+            formData.append('message', message);
+
+            formData.append('send_email', true);
+
+            $.ajax({
+                url: 'server',
+                data: formData,
+                type: 'POST',
+                dataType: 'JSON',
+                processData: false,
+                contentType: false,
+                success: function () {
+                    location.reload();
+                },
+                error: function (_, _, error) {
+                    console.error(error);
+                }
+            });
+        }
+    })
+
+    $("#send_email_message").keydown(function () {
+        $("#send_email_message").removeClass("is-invalid");
+        $("#error_send_email_message").addClass("d-none");
+    })
+
+    $("#new_event_form").submit(function () {
+        const name = $("#new_event_name").val();
+        const date = $("#new_event_date").val();
+        const attendees = $("#new_event_attendees").val();
+
+        const current_date = new Date();
+        const selected_date = new Date(date);
+
+        let status = "Upcoming";
+
+        if (selected_date < current_date) {
+            status = "Done";
+        }
+
+        $(".loading").removeClass("d-none");
+
+        $("#new_event_submit").text("Please wait...");
+        $("#new_event_submit").attr("disabled", true);
+
+        var formData = new FormData();
+
+        formData.append('name', name);
+        formData.append('date', date);
+        formData.append('attendees', attendees);
+        formData.append('status', status);
+
+        formData.append('add_event', true);
+
+        $.ajax({
+            url: 'server',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response) {
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                }
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
+        });
+    })
+
+    $(document).on("click", ".edit_event", function () {
+        const event_id = $(this).attr("event_id");
+
+        $("#update_event_modal").modal("show");
+        $(".loading").removeClass("d-none");
+
+        var formData = new FormData();
+
+        formData.append('event_id', event_id);
+
+        formData.append('get_event_data', true);
+
+        $.ajax({
+            url: 'server',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $("#update_event_id").val(response.id);
+                $("#update_event_name").val(response.name);
+                $("#update_event_date").val(response.date);
+                $("#update_event_attendees").val(response.attendees.split(',')).trigger('change');
+
+                $(".loading").addClass("d-none");
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
+        });
+    })
+
+    $(document).on("click", ".delete_event", function () {
+        const event_id = $(this).attr("event_id");
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var formData = new FormData();
+
+                formData.append('event_id', event_id);
+
+                formData.append('delete_event', true);
+
+                $.ajax({
+                    url: 'server',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response) {
+                            location.reload();
+                        }
+                    },
+                    error: function (_, _, error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
+    })
+
+    $("#update_event_form").submit(function () {
+        const id = $("#update_event_id").val();
+        const name = $("#update_event_name").val();
+        const date = $("#update_event_date").val();
+        const attendees = $("#update_event_attendees").val();
+
+        const current_date = new Date();
+        const selected_date = new Date(date);
+
+        let status = "Upcoming";
+
+        if (selected_date < current_date) {
+            status = "Done";
+        }
+
+        $(".loading").removeClass("d-none");
+
+        $("#update_event_submit").text("Please wait...");
+        $("#update_event_submit").attr("disabled", true);
+
+        var formData = new FormData();
+
+        formData.append('id', id);
+        formData.append('name', name);
+        formData.append('date', date);
+        formData.append('attendees', attendees);
+        formData.append('status', status);
+
+        formData.append('update_event', true);
+
+        $.ajax({
+            url: 'server',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response) {
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                }
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
+        });
+    })
 })
