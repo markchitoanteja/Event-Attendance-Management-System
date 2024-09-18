@@ -7,6 +7,12 @@ jQuery(document).ready(function () {
         });
     }
 
+    if (current_page == "current_event") {
+        if (current_event_uuid) {
+            generate_qr_code(current_event_uuid);
+        }
+    }
+
     $('.select2').select2();
 
     $('[data-mask]').inputmask();
@@ -100,7 +106,7 @@ jQuery(document).ready(function () {
                 if (response) {
                     $("#account_settings_name").val(response.name);
                     $("#account_settings_username").val(response.username);
-                    $("#account_settings_image_display").attr("src", "../static/uploads/" + response.image);
+                    $("#account_settings_image_display").attr("src", "static/uploads/" + response.image);
 
                     $("#account_settings_id").val(response.id);
                     $("#account_settings_old_username").val(response.username);
@@ -129,7 +135,7 @@ jQuery(document).ready(function () {
                 URL.revokeObjectURL(imageURL);
             });
         } else {
-            displayImage.attr('src', "../static/uploads/" + $("#account_settings_old_image").val());
+            displayImage.attr('src', "static/uploads/" + $("#account_settings_old_image").val());
         }
     })
 
@@ -352,7 +358,7 @@ jQuery(document).ready(function () {
                 URL.revokeObjectURL(imageURL);
             });
         } else {
-            displayImage.attr('src', "../static/uploads/default-user-image.png");
+            displayImage.attr('src', "static/uploads/default-user-image.png");
         }
     })
 
@@ -442,7 +448,7 @@ jQuery(document).ready(function () {
             contentType: false,
             success: function (response) {
                 if (response) {
-                    $("#update_attendee_image_display").attr("src", "../static/uploads/" + response.image);
+                    $("#update_attendee_image_display").attr("src", "static/uploads/" + response.image);
                     $("#update_attendee_student_number").val(response.student_number);
                     $("#update_attendee_course").val(response.course);
                     $("#update_attendee_year").val(response.year);
@@ -625,7 +631,7 @@ jQuery(document).ready(function () {
                 URL.revokeObjectURL(imageURL);
             });
         } else {
-            displayImage.attr('src', "../static/uploads/" + old_image);
+            displayImage.attr('src', "static/uploads/" + old_image);
         }
     })
 
@@ -907,4 +913,131 @@ jQuery(document).ready(function () {
             }
         });
     })
+
+    $(document).on("click", ".set_to_current", function () {
+        const event_id = $(this).attr("event_id");
+
+        Swal.fire({
+            title: "Set this Event to Current?",
+            text: "You are going to set this event to current.",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, set it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var formData = new FormData();
+
+                formData.append('event_id', event_id);
+
+                formData.append('set_to_current', true);
+
+                $.ajax({
+                    url: 'server',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response) {
+                            location.reload();
+                        }
+                    },
+                    error: function (_, _, error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
+    })
+
+    $("#ip_address").click(function () {
+        $("#ip_address_modal").modal("show");
+        $(".loading").removeClass("d-none");
+
+        var formData = new FormData();
+
+        formData.append('get_settings_data', true);
+
+        $.ajax({
+            url: 'server',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $("#ip_address_ip").val(response.ip_address);
+
+                $(".loading").addClass("d-none");
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
+        });
+    })
+
+    $("#ip_address_form").submit(function () {
+        const ip_address = $("#ip_address_ip").val();
+
+        var valid_id = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+
+        if (valid_id.test(ip_address)) {
+            $(".loading").removeClass("d-none");
+
+            $("#ip_address_submit").text("Please wait...");
+            $("#ip_address_submit").attr("disabled", true);
+
+            var formData = new FormData();
+
+            formData.append('ip_address', ip_address);
+            
+            formData.append('update_ip_address', true);
+
+            $.ajax({
+                url: 'server',
+                data: formData,
+                type: 'POST',
+                dataType: 'JSON',
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response) {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    }
+                },
+                error: function (_, _, error) {
+                    console.error(error);
+                }
+            });
+        } else {
+            $("#ip_address_ip").addClass("is-invalid");
+            $("#error_ip_address_ip").removeClass("d-none");
+        }
+    })
+
+    $("#ip_address_ip").keydown(function () {
+        $("#ip_address_ip").removeClass("is-invalid");
+        $("#error_ip_address_ip").addClass("d-none");
+    })
+
+    function generate_qr_code(event_uuid) {
+        const qrcode = $("#qrcode");
+        const containerWidth = qrcode.width();
+
+        qrcode.empty();
+
+        var _ = new QRCode(document.getElementById("qrcode"), {
+            text: event_uuid,
+            width: containerWidth,
+            height: containerWidth,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
 })
