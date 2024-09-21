@@ -37,6 +37,18 @@ if (!isset($_SESSION["user_id"])) {
     if ($result_2->num_rows > 0) {
         $current_event = $result_2->fetch_assoc();
     }
+
+    $attendances = null;
+
+    $current_date = date("Y-m-d");
+
+    $query_3 = "SELECT `attendance`.*, `attendees`.* FROM `attendance` JOIN `attendees` ON `attendance`.`student_id` = `attendees`.`account_id` WHERE DATE(`attendance`.`created_at`) = '" . $current_date . "' ORDER BY `attendance`.`id` DESC";
+    $result_3 = $model->query($query_3);
+
+
+    if ($result_3->num_rows > 0) {
+        $attendances = $result_3->fetch_all(MYSQLI_ASSOC);
+    }
 }
 ?>
 
@@ -73,7 +85,17 @@ if (!isset($_SESSION["user_id"])) {
                                         </tr>
                                     </thead>
                                     <tbody>
-
+                                        <?php if ($attendances): ?>
+                                            <?php foreach ($attendances as $attendance): ?>
+                                                <tr>
+                                                    <td><?= trim($attendance["first_name"] . ' ' . (!empty($attendance["middle_name"]) ? substr($attendance["middle_name"], 0, 1) . '. ' : '') . $attendance["last_name"]) ?></td>
+                                                    <td><?= $attendance["course"] . " " . $attendance["year"][0] . "-" . $attendance["section"] ?></td>
+                                                    <td><?= $attendance["time_in"] ?></td>
+                                                    <td><?= $attendance["time_out"] != "" ? $attendance["time_out"] : "Not Yet Available" ?></td>
+                                                    <td class="text-center text-<?= $attendance["status"] == "In" ? "success" : "danger" ?>"><?= $attendance["status"] ?></td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        <?php endif ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -85,19 +107,19 @@ if (!isset($_SESSION["user_id"])) {
                         <h4>Event Information</h4>
 
                         <div class="row mb-2">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <span>Event Name:</span>
                             </div>
-                            <div class="col-lg-6">
-                                <strong>Holloween Party</strong>
+                            <div class="col-lg-8">
+                                <strong><?= $current_event["name"] ?></strong>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <span>Date and Time:</span>
                             </div>
-                            <div class="col-lg-6">
-                                <strong>September 17, 2024 6:00 PM</strong>
+                            <div class="col-lg-8">
+                                <strong><?= date('F j, Y g:i A', strtotime($current_event["date"])); ?></strong>
                             </div>
                         </div>
                     </div>

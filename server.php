@@ -503,7 +503,7 @@ if (isset($_POST["get_settings_data"])) {
 if (isset($_POST["update_ip_address"])) {
     $ip_address = $_POST["ip_address"];
 
-    $query = "UPDATE `settings` SET `ip_address`='" . $ip_address . "'";
+    $query = "UPDATE `settings` SET `ip_address`='" . $ip_address . "', `updated_at`='" . date("Y-m-d H:i:s") . "'";
     $model->query($query);
 
     $_SESSION["notification"] = [
@@ -513,6 +513,58 @@ if (isset($_POST["update_ip_address"])) {
     ];
 
     echo json_encode(true);
+}
+
+if (isset($_POST["check_attendance"])) {
+    $query = "SELECT `id`, `student_id`, `time_in`, `time_out` FROM `attendance` WHERE `status`='temp'";
+    $result = $model->query($query);
+
+    $response = false;
+
+    if ($result->num_rows > 0) {
+        $attendance = $result->fetch_assoc();
+
+        $attendance_id = $attendance["id"];
+        $student_id = $attendance["student_id"];
+        $time_in = $attendance["time_in"];
+        $time_out = $attendance["time_out"];
+
+        $query_2 = "SELECT users.*, attendees.* FROM `users` INNER JOIN `attendees` ON `users`.`id` = `attendees`.`account_id` WHERE users.id = '" . $student_id . "'";
+        $result_2 = $model->query($query_2);
+
+        $student = $result_2->fetch_assoc();
+
+        $student_name = $student["name"];
+        $student_image = $student["image"];
+        $student_student_number = $student["student_number"];
+        $student_course_year_section = $student["course"] . " " . $student["year"][0] . "-" . $student["section"];
+
+        if ($time_in && !$time_out) {
+            $query_3 = "UPDATE `attendance` SET `status`='In', `updated_at`='" . date("Y-m-d H:i:s") . "' WHERE `id`='" . $attendance_id . "'";
+            $model->query($query_3);
+
+            $status = "In";
+        } else {
+            $query_3 = "UPDATE `attendance` SET `status`='Out', `updated_at`='" . date("Y-m-d H:i:s") . "' WHERE `id`='" . $attendance_id . "'";
+            $model->query($query_3);
+
+            $status = "Out";
+        }
+
+        $_SESSION["attendee_data"] = [
+            "student_name" => $student_name,
+            "student_image" => $student_image,
+            "student_student_number" => $student_student_number,
+            "student_course_year_section" => $student_course_year_section,
+            "time_in" => $time_in,
+            "time_out" => $time_out,
+            "status" => $status,
+        ];
+
+        $response = true;
+    }
+
+    echo json_encode($response);
 }
 
 if (isset($_POST["logout"])) {

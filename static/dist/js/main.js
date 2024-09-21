@@ -7,9 +7,17 @@ jQuery(document).ready(function () {
         });
     }
 
+    if (attendee_data) {
+        $("#display_attendee_modal").modal("show");
+    }
+
     if (current_page == "current_event") {
         if (current_event_uuid) {
             generate_qr_code(current_event_uuid);
+
+            setInterval(function () {
+                check_attendance();
+            }, 100);
         }
     }
 
@@ -993,7 +1001,7 @@ jQuery(document).ready(function () {
             var formData = new FormData();
 
             formData.append('ip_address', ip_address);
-            
+
             formData.append('update_ip_address', true);
 
             $.ajax({
@@ -1038,6 +1046,29 @@ jQuery(document).ready(function () {
             colorDark: "#000000",
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+
+    function check_attendance() {
+        var formData = new FormData();
+
+        formData.append('check_attendance', true);
+
+        $.ajax({
+            url: 'server',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response) {
+                    location.reload();
+                }
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
         });
     }
 })

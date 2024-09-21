@@ -464,7 +464,7 @@
                                     <select class="select2 w-100" id="new_event_attendees" multiple="multiple" required>
                                         <?php if ($attendees): ?>
                                             <?php foreach ($attendees as $attendee): ?>
-                                                <option value="<?= $attendee["id"] ?>"><?= trim($attendee["first_name"] . ' ' . (!empty($attendee["middle_name"]) ? substr($attendee["middle_name"], 0, 1) . '. ' : '') . $attendee["last_name"]) ?></option>
+                                                <option value="<?= $attendee["account_id"] ?>"><?= trim($attendee["first_name"] . ' ' . (!empty($attendee["middle_name"]) ? substr($attendee["middle_name"], 0, 1) . '. ' : '') . $attendee["last_name"]) ?></option>
                                             <?php endforeach ?>
                                         <?php endif ?>
                                     </select>
@@ -507,7 +507,7 @@
                                     <select class="select2 w-100" id="update_event_attendees" multiple="multiple" required>
                                         <?php if ($attendees): ?>
                                             <?php foreach ($attendees as $attendee): ?>
-                                                <option value="<?= $attendee["id"] ?>"><?= trim($attendee["first_name"] . ' ' . (!empty($attendee["middle_name"]) ? substr($attendee["middle_name"], 0, 1) . '. ' : '') . $attendee["last_name"]) ?></option>
+                                                <option value="<?= $attendee["account_id"] ?>"><?= trim($attendee["first_name"] . ' ' . (!empty($attendee["middle_name"]) ? substr($attendee["middle_name"], 0, 1) . '. ' : '') . $attendee["last_name"]) ?></option>
                                             <?php endforeach ?>
                                         <?php endif ?>
                                     </select>
@@ -525,12 +525,64 @@
             </div>
         <?php endif ?>
 
+        <?php if ($_SESSION["current_page"] == "current_event"): ?>
+            <!-- Display Attendee Modal -->
+            <div class="modal fade attendee-modal" id="display_attendee_modal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg">
+                        <div class="overlay loading d-none">
+                            <i class="fas fa-2x fa-sync fa-spin"></i>
+                        </div>
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Attendee Information</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body px-4 pt-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <!-- Student Image -->
+                                <img id="student_image" src="static/uploads/<?= $_SESSION["attendee_data"]["student_image"] ?>"
+                                    alt="Student Image" class="rounded-circle border" width="120" height="120"
+                                    style="object-fit: cover; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+                                <div class="ml-4">
+                                    <!-- Student Name -->
+                                    <h3 id="student_name" class="font-weight-bold mb-1"><?= $_SESSION["attendee_data"]["student_name"] ?></h3>
+                                    <!-- Student Number -->
+                                    <p id="student_student_number" class="text-muted mb-2" style="font-size: 1.2rem;"><?= $_SESSION["attendee_data"]["student_student_number"] ?></p>
+                                    <!-- Course, Year, Section -->
+                                    <p id="student_course_year_section" class="text-muted" style="font-size: 1.2rem;"><?= $_SESSION["attendee_data"]["student_course_year_section"] ?></p>
+                                </div>
+                            </div>
+                            <!-- Success Alert for Attendance Recorded -->
+                            <div class="alert alert-primary" role="alert" style="font-size: 1.2rem;">
+                                <i class="fas fa-check-circle"></i> Attendance has been successfully recorded!
+                            </div>
+
+                            <!-- Time in and Time out -->
+                            <div class="mt-3">
+                                <p class="mb-2" style="font-size: 1.2rem;"><strong>Time In:</strong> <span id="time_in"><?= $_SESSION["attendee_data"]["time_in"] ?></span></p>
+                                <p class="mb-0" style="font-size: 1.2rem;"><strong>Time Out:</strong> <span id="time_out" class="<?= $_SESSION["attendee_data"]["time_out"] == "" ? "text-muted" : null ?>"><?= $_SESSION["attendee_data"]["time_out"] != "" ? $_SESSION["attendee_data"]["time_out"] : "Not Yet Available" ?></span></p>
+                            </div>
+
+                            <!-- Status (In/Out) -->
+                            <div id="status" class="text-center mt-3 py-3">
+                                <span class="badge badge-<?= $_SESSION["attendee_data"]["status"] == "In" ? "success" : "danger" ?> badge-status">Status: <?= $_SESSION["attendee_data"]["status"] ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif ?>
+
         <script>
             var mode = "<?= isset($_SESSION["mode"]) ? $_SESSION["mode"] : "light" ?>";
             var current_event_uuid = <?= isset($current_event) ? json_encode($current_event["uuid"]) : json_encode(null) ?>;
             var user_id = "<?= $_SESSION["user_id"] ?>";
             var current_page = "<?= $_SESSION["current_page"] ?>";
             var notification = <?= isset($_SESSION["notification"]) ? json_encode($_SESSION["notification"]) : json_encode(null) ?>;
+            var attendee_data = <?= isset($_SESSION["attendee_data"]) ? json_encode($_SESSION["attendee_data"]) : json_encode(null) ?>;
         </script>
 
         <script src="static/plugins/jquery/jquery.min.js"></script>
@@ -543,9 +595,10 @@
         <script src="static/plugins/select2/js/select2.full.min.js"></script>
         <script src="static/plugins/qrcode/qrcode.min.js"></script>
         <script src="static/dist/js/adminlte.min.js"></script>
-        <script src="static/dist/js/main.js?v=1.2.8"></script>
+        <script src="static/dist/js/main.js?v=1.3.2"></script>
         </body>
 
         </html>
 
         <?php unset($_SESSION["notification"]) ?>
+        <?php unset($_SESSION["attendee_data"]) ?>

@@ -1,0 +1,35 @@
+.attendee-modal .modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.attendee-modal .modal-header {
+    border-bottom: none;
+}
+
+.attendee-modal .modal-body {
+    font-size: 1.2rem;
+    /* Increase base font size */
+}
+
+.attendee-modal h3 {
+    font-size: 1.8rem;
+    /* Larger student name font */
+}
+
+.attendee-modal p {
+    font-size: 1.2rem;
+    /* Increase paragraph font size */
+}
+
+.attendee-modal img {
+    width: 120px;
+    /* Larger image */
+    height: 120px;
+}
+
+.badge-status {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border-radius: 50px;
+}

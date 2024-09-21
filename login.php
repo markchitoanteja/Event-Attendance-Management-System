@@ -96,8 +96,8 @@ if ($isMobile) {
                     <button type="submit" class="btn btn-primary w-100 mb-3" id="login_submit">Login</button>
 
                     <span>
-                        Already had an Account?
-                        <a href="javascript:void(0)" id="download_app">Download App</a>
+                        Are you a student?
+                        <a href="javascript:void(0)" id="download_app">Download Mobile App</a>
                     </span>
                 </form>
             </div>

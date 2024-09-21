@@ -43,6 +43,7 @@ if ($isMobile) {
     <link rel="stylesheet" href="static/plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="static/plugins/select2/css/select2-bootstrap4.min.css">
     <link rel="stylesheet" href="static/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="static/dist/css/main.css">
     <link rel="stylesheet" href="static/dist/css/fonts.min.css">
 </head>
 
