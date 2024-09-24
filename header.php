@@ -22,6 +22,11 @@ if ($isMobile) {
 
     $query_2 = "UPDATE `events` SET `status` = 'Done' WHERE `date` < '$current_datetime' AND `status` != 'Done'";
     $model->query($query_2);
+
+    $query_3 = "SELECT `ip_address` FROM `settings`";
+    $result_3 = $model->query($query_3);
+
+    $ip_address = $result_3->fetch_assoc()["ip_address"];
 }
 ?>
 
@@ -44,7 +49,7 @@ if ($isMobile) {
     <link rel="stylesheet" href="static/plugins/select2/css/select2-bootstrap4.min.css">
     <link rel="stylesheet" href="static/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="static/dist/css/main.css">
-    <link rel="stylesheet" href="static/dist/css/fonts.min.css">
+    <link rel="stylesheet" href="static/dist/css/fonts.min.css?v=1.0.2">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed <?= isset($_SESSION["mode"]) && $_SESSION["mode"] == "dark" ? "dark-mode" : null ?>">
@@ -63,12 +68,14 @@ if ($isMobile) {
 
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)">
+                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)" id="settings">
+                        <small class="text-warning mr-1 d-none" id="attention_required">Attention Required</small>
                         <i class="fas fa-cog"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a href="javascript:void(0)" class="dropdown-item" id="ip_address">
+                        <a href="javascript:void(0)" class="dropdown-item d-flex align-items-center" id="ip_address">
                             <i class="fas fa-server mr-2"></i> IP Address
+                            <span class="badge badge-warning badge-pill ml-2 d-none" id="warning_ip_address" style="font-size: 0.60rem;"><i class="fas fa-exclamation"></i></span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="javascript:void(0)" class="dropdown-item" id="account_settings">

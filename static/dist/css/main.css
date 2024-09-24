@@ -33,3 +33,17 @@
     padding: 10px 20px;
     border-radius: 50px;
 }
+
+.card-footer {
+    text-align: right;
+}
+
+.pagination .page-item.disabled .page-link {
+    pointer-events: none;
+    color: #6c757d;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+}

@@ -76,6 +76,17 @@ function upload_image($target_directory, $image_file)
     return $response;
 }
 
+function event_logs($icon, $event)
+{
+    $model = new Model('localhost', 'root', '', 'event_attendance_management_system');
+
+    $uuid = generateUUIDv4();
+    $current_date = date("Y-m-d H:i:s");
+
+    $query = "INSERT INTO `logs` (`uuid`, `icon`, `event`, `created_at`, `updated_at`) VALUES ('" . $uuid . "', '" . $icon . "', '" . $event . "', '" . $current_date . "', '" . $current_date . "')";
+    $model->query($query);
+}
+
 if (isset($_POST["login"])) {
     $username = $_POST["username"];
     $password = $_POST["password"];
@@ -99,6 +110,8 @@ if (isset($_POST["login"])) {
                 $_SESSION['password'] = $password;
             }
 
+            event_logs("fas fa-check-circle text-success", "Admin successfully logged in at " . date("F j, Y h:i a") . ".");
+
             $response = true;
         }
     }
@@ -110,6 +123,14 @@ if (isset($_POST["change_mode"])) {
     $mode = $_POST["mode"];
 
     $_SESSION["mode"] = $mode;
+
+    $icon = "fas fa-moon";
+
+    if ($mode == "light") {
+        $icon = "fas fa-sun";
+    }
+
+    event_logs($icon . " text-primary", "Admin switched to " . ucfirst($mode) . " Mode on " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }
@@ -168,6 +189,8 @@ if (isset($_POST["update_admin"])) {
             "text" => "Account is updated successfully.",
             "icon" => "success",
         ];
+
+        event_logs("fas fa-user-cog text-info", "Admin data updated successfully for admin " . $name . " at " . date("F j, Y h:i a") . ".");
 
         $response = true;
     }
@@ -236,6 +259,8 @@ if (isset($_POST["add_attendee"])) {
             "text" => "An attendee has been added to the database.",
             "icon" => "success",
         ];
+
+        event_logs("fas fa-user-plus text-success", "Attendee " . $name . " added successfully at " . date("F j, Y h:i a") . ".");
     }
 
     $response = [
@@ -329,6 +354,8 @@ if (isset($_POST["update_attendee"])) {
             "text" => "An attendee has been updated successfully.",
             "icon" => "success",
         ];
+
+        event_logs("fas fa-user-edit text-info", "Attendee " . $name . " updated successfully with new details at " . date("F j, Y h:i a") . ".");
     }
 
     $response = [
@@ -342,17 +369,24 @@ if (isset($_POST["update_attendee"])) {
 if (isset($_POST["delete_attendee"])) {
     $attendee_id = $_POST["attendee_id"];
 
-    $query = "DELETE FROM `users` WHERE `id` = '" . $attendee_id . "'";
-    $model->query($query);
+    $query = "SELECT `name` FROM `users` WHERE `id`='" . $attendance_id . "'";
+    $result = $model->query($query);
 
-    $query_2 = "DELETE FROM `attendees` WHERE `account_id` = '" . $attendee_id . "'";
+    $name = $result->fetch_assoc()["name"];
+
+    $query_2 = "DELETE FROM `users` WHERE `id` = '" . $attendee_id . "'";
     $model->query($query_2);
+
+    $query_3 = "DELETE FROM `attendees` WHERE `account_id` = '" . $attendee_id . "'";
+    $model->query($query_3);
 
     $_SESSION["notification"] = [
         "title" => "Success!",
         "text" => "An attendee has been deleted from the database.",
         "icon" => "success",
     ];
+
+    event_logs("fas fa-user-minus text-danger", "Attendee " . $name . " was deleted successfully from the database at " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }
@@ -392,6 +426,8 @@ if (isset($_POST["send_email"])) {
         ];
     }
 
+    event_logs("fas fa-envelope text-primary", "Email sent successfully to " . $name . " regarding " . $subject . " at " . date("F j, Y h:i a") . ".");
+
     echo json_encode(true);
 }
 
@@ -412,6 +448,8 @@ if (isset($_POST["add_event"])) {
         "text" => "An event has beed added successfully to the database.",
         "icon" => "success",
     ];
+
+    event_logs("fas fa-calendar-plus text-success", "New event titled \'" . $name . "\' added successfully on " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }
@@ -445,20 +483,29 @@ if (isset($_POST["update_event"])) {
         "icon" => "success",
     ];
 
+    event_logs("fas fa-pencil-alt text-info", "Event titled \'" . $name . "\' updated successfully with new details at " . date("F j, Y h:i a") . ".");
+
     echo json_encode(true);
 }
 
 if (isset($_POST["delete_event"])) {
     $event_id = $_POST["event_id"];
 
-    $query = "DELETE FROM `events` WHERE `id` = '" . $event_id . "'";
-    $model->query($query);
+    $query = "SELECT `name` FROM `events` WHERE `id`='" . $event_id . "'";
+    $result = $model->query($query);
+
+    $name = $result->fetch_assoc()["name"];
+
+    $query_2 = "DELETE FROM `events` WHERE `id` = '" . $event_id . "'";
+    $model->query($query_2);
 
     $_SESSION["notification"] = [
         "title" => "Success!",
         "text" => "An event has been deleted from the database.",
         "icon" => "success",
     ];
+
+    event_logs("fas fa-calendar-times text-danger", "Event titled \'" . $name . "\' was deleted successfully at " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }
@@ -481,12 +528,19 @@ if (isset($_POST["set_to_current"])) {
         $query_2 = "UPDATE `events` SET  `status`='Current', `date` = CONCAT('$current_date', ' ', DATE_FORMAT(`date`, '%H:%i:%s')), `updated_at`='" . date('Y-m-d H:i:s') . "' WHERE `id`='" . $event_id . "'";
         $model->query($query_2);
 
+        $query_3 = "SELECT `name` FROM `events` WHERE `id`='" . $event_id . "'";
+        $result_2 = $model->query($query_3);
+
+        $name = $result_2->fetch_assoc()["name"];
+
         $_SESSION["notification"] = [
             "title" => "Success!",
             "text" => "An event has been set to Current.",
             "icon" => "success",
         ];
     }
+
+    event_logs("fas fa-calendar-check text-primary", "Current event set to \'" . $name . "\' successfully at " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }
@@ -511,6 +565,8 @@ if (isset($_POST["update_ip_address"])) {
         "text" => "IP Address has been updated.",
         "icon" => "success",
     ];
+
+    event_logs("fas fa-network-wired text-info", "IP address updated successfully to " . $ip_address . " at " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }
@@ -544,11 +600,17 @@ if (isset($_POST["check_attendance"])) {
             $model->query($query_3);
 
             $status = "In";
+
+            $event_message = "Attendee clocked in successfully at " . date("F j, Y h:i a") . ".";
+            $event_icon = "fas fa-sign-in-alt text-success";
         } else {
             $query_3 = "UPDATE `attendance` SET `status`='Out', `updated_at`='" . date("Y-m-d H:i:s") . "' WHERE `id`='" . $attendance_id . "'";
             $model->query($query_3);
 
             $status = "Out";
+
+            $event_message = "Attendee clocked out successfully at " . date("F j, Y h:i a") . ".";
+            $event_icon = "fas fa-sign-out-alt text-success";
         }
 
         $_SESSION["attendee_data"] = [
@@ -562,6 +624,8 @@ if (isset($_POST["check_attendance"])) {
         ];
 
         $response = true;
+
+        event_logs($event_icon, $event_message);
     }
 
     echo json_encode($response);
@@ -574,6 +638,8 @@ if (isset($_POST["logout"])) {
         "type" => "alert-success",
         "message" => "You had been signed out.",
     ];
+
+    event_logs("fas fa-power-off text-success", "Admin logged out successfully at " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }

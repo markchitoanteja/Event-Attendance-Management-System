@@ -40,25 +40,57 @@ jQuery(document).ready(function () {
     })
 
     $("#download_app").click(function () {
+        $(".loading").removeClass("d-none");
+
+        $("#ip_ok").addClass("d-none");
+        $("#ip_not_ok").addClass("d-none");
+
         $("#download_app_modal").modal("show");
 
         var formData = new FormData();
 
-        formData.append('get_settings_data', true);
+        formData.append('ip_address', ip_address);
+
+        formData.append('check_connection', true);
 
         $.ajax({
-            url: 'server',
+            url: 'mobile_api',
             data: formData,
             type: 'POST',
             dataType: 'JSON',
             processData: false,
             contentType: false,
             success: function (response) {
-                const download_link = "http://" + response.ip_address + "/Event-Attendance-Management-System/download";
+                $(".loading").addClass("d-none");
 
-                $("#download_app_download_link").val(download_link);
+                if (response) {
+                    var formData = new FormData();
 
-                generate_qr_code(download_link);
+                    formData.append('get_settings_data', true);
+
+                    $.ajax({
+                        url: 'server',
+                        data: formData,
+                        type: 'POST',
+                        dataType: 'JSON',
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            $("#ip_ok").removeClass("d-none");
+
+                            const download_link = "http://" + response.ip_address + "/Event-Attendance-Management-System/download";
+
+                            $("#download_app_download_link").val(download_link);
+
+                            generate_qr_code(download_link);
+                        },
+                        error: function (_, _, error) {
+                            console.error(error);
+                        }
+                    });
+                } else {
+                    $("#ip_not_ok").removeClass("d-none");
+                }
             },
             error: function (_, _, error) {
                 console.error(error);

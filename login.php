@@ -18,6 +18,11 @@ if ($isMobile) {
     $query = "UPDATE `events` SET `status` = 'Done' WHERE `date` < '$current_datetime' AND `status` != 'Done'";
     $model->query($query);
 
+    $query_2 = "SELECT `ip_address` FROM `settings`";
+    $result_2 = $model->query($query_2);
+
+    $ip_address = $result_2->fetch_assoc()["ip_address"];
+
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -108,37 +113,59 @@ if ($isMobile) {
     <div class="modal fade" id="download_app_modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+                <!-- Loading Overlay -->
+                <div class="overlay loading d-none">
+                    <i class="fas fa-2x fa-sync fa-spin"></i>
+                </div>
+                <!-- Modal Header -->
                 <div class="modal-header">
                     <h5 class="modal-title">Download App</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+                <!-- Modal Body -->
                 <div class="modal-body text-center">
-                    <p>Scan the QR code below to download the app:</p>
-
-                    <div class="row mb-3">
-                        <div class="col-lg-12 d-flex justify-content-center">
-                            <div style="width: 300px; height: 300px;" id="qrcode"></div>
+                    <!-- Success Content -->
+                    <div id="ip_ok" class="d-none">
+                        <p>Scan the QR code below to download the app:</p>
+                        <div class="row mb-4">
+                            <div class="col-lg-12 d-flex justify-content-center">
+                                <div style="width: 300px; height: 300px;" id="qrcode"></div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <p class="mb-1">Or copy the link below to download the app:</p>
+                            <input type="url" class="form-control" id="download_app_download_link">
                         </div>
                     </div>
-
-                    <div class="form-group mb-0">
-                        <input type="url" class="form-control" id="download_app_download_link">
+                    <!-- Error Content -->
+                    <div id="ip_not_ok" class="d-none">
+                        <div class="text-center py-3">
+                            <h4 class="text-danger">
+                                The system is unable to establish a connection with the provided IP address.
+                                Please verify the IP address and update it in the system settings.
+                            </h4>
+                        </div>
                     </div>
                 </div>
+                <!-- Modal Footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script>
+        var ip_address = "<?= $ip_address ?>";
+    </script>
+
     <script src="static/plugins/jquery/jquery.min.js"></script>
     <script src="static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="static/plugins/qrcode/qrcode.min.js"></script>
     <script src="static/dist/js/adminlte.min.js"></script>
-    <script src="static/dist/js/login.js?v=1.0.5"></script>
+    <script src="static/dist/js/login.js?v=1.0.6"></script>
 </body>
 
 </html>

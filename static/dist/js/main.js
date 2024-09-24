@@ -21,6 +21,8 @@ jQuery(document).ready(function () {
         }
     }
 
+    check_ip_address(ip_address);
+
     $('.select2').select2();
 
     $('[data-mask]').inputmask();
@@ -691,7 +693,7 @@ jQuery(document).ready(function () {
             contentType: false,
             success: function (response) {
                 const subject = "Your Login Credentials for the ESSU Can-Avid Campus Mobile Application";
-                const message = `Hi ` + response.name + `,\n\nI hope this email finds you well. Here are the credentials you can use to log in to the mobile application of the system.\n\nUsername: ` + response.username + `\nPassword: (type the password here)\n\nBest regards,\nESSU Can-Avid Campus`;
+                const message = `Hi ` + response.name + `,\n\nI hope this email finds you well. Here are the credentials you can use to log in to the mobile application of the system.\n\nUsername: ` + response.username + `\nPassword: (type the password here)\n\nTo download the mobile application, please click the link below:\n<a href="http://` + ip_address + `/Event-Attendance-Management-System/download">Download Mobile Application</a>\n\n\Best regards,\nESSU Can-Avid Campus`;
 
                 $("#send_email_email").val(response.email);
                 $("#send_email_name").val(response.name);
@@ -1001,11 +1003,10 @@ jQuery(document).ready(function () {
             var formData = new FormData();
 
             formData.append('ip_address', ip_address);
-
-            formData.append('update_ip_address', true);
+            formData.append('check_connection', true);
 
             $.ajax({
-                url: 'server',
+                url: 'mobile_api',
                 data: formData,
                 type: 'POST',
                 dataType: 'JSON',
@@ -1013,9 +1014,38 @@ jQuery(document).ready(function () {
                 contentType: false,
                 success: function (response) {
                     if (response) {
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1500);
+                        var formData = new FormData();
+
+                        formData.append('ip_address', ip_address);
+
+                        formData.append('update_ip_address', true);
+
+                        $.ajax({
+                            url: 'server',
+                            data: formData,
+                            type: 'POST',
+                            dataType: 'JSON',
+                            processData: false,
+                            contentType: false,
+                            success: function (response_2) {
+                                if (response_2) {
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 1500);
+                                }
+                            },
+                            error: function (_, _, error) {
+                                console.error(error);
+                            }
+                        });
+                    } else {
+                        $(".loading").addClass("d-none");
+
+                        $("#ip_address_submit").text("Save changes");
+                        $("#ip_address_submit").removeAttr("disabled");
+
+                        $("#ip_address_ip").addClass("is-invalid");
+                        $("#error_ip_address_ip").removeClass("d-none");
                     }
                 },
                 error: function (_, _, error) {
@@ -1064,6 +1094,36 @@ jQuery(document).ready(function () {
             success: function (response) {
                 if (response) {
                     location.reload();
+                }
+            },
+            error: function (_, _, error) {
+                console.error(error);
+            }
+        });
+    }
+
+    function check_ip_address(ip_address) {
+        var formData = new FormData();
+
+        formData.append('ip_address', ip_address);
+        formData.append('check_connection', true);
+
+        $.ajax({
+            url: 'mobile_api',
+            data: formData,
+            type: 'POST',
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (!response) {
+                    $("#settings").addClass("text-warning");
+                    $("#ip_address").addClass("text-warning");
+                    $("#warning_ip_address").removeClass("d-none");
+                    $("#attention_required").removeClass("d-none");
+
+                    $("#ip_address_ip").addClass("is-invalid");
+                    $("#error_ip_address_ip").removeClass("d-none");
                 }
             },
             error: function (_, _, error) {

@@ -577,6 +577,7 @@
         <?php endif ?>
 
         <script>
+            var ip_address = "<?= $ip_address ?>";
             var mode = "<?= isset($_SESSION["mode"]) ? $_SESSION["mode"] : "light" ?>";
             var current_event_uuid = <?= isset($current_event) ? json_encode($current_event["uuid"]) : json_encode(null) ?>;
             var user_id = "<?= $_SESSION["user_id"] ?>";
@@ -595,7 +596,7 @@
         <script src="static/plugins/select2/js/select2.full.min.js"></script>
         <script src="static/plugins/qrcode/qrcode.min.js"></script>
         <script src="static/dist/js/adminlte.min.js"></script>
-        <script src="static/dist/js/main.js?v=1.3.2"></script>
+        <script src="static/dist/js/main.js?v=1.3.5"></script>
         </body>
 
         </html>

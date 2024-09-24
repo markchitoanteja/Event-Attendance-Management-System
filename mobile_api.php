@@ -6,7 +6,25 @@ $model = new Model('localhost', 'root', '', 'event_attendance_management_system'
 date_default_timezone_set('Asia/Manila');
 
 if (isset($_POST["check_connection"])) {
-    echo json_encode(true);
+    $server_ip = $_POST["ip_address"];
+    $url = "http://" . $server_ip;
+
+    $ch = curl_init($url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+
+    $response = curl_exec($ch);
+
+    if ($response === false) {
+        $response = false;
+    } else {
+        $response = true;
+    }
+
+    curl_close($ch);
+
+    echo json_encode($response);
 }
 
 if (isset($_POST["verify_login"])) {

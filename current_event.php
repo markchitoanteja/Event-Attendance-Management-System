@@ -1,8 +1,4 @@
 <?php
-require_once "model.php";
-
-$model = new Model('localhost', 'root', '', 'event_attendance_management_system');
-
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -17,6 +13,10 @@ if (!isset($_SESSION["user_id"])) {
 
     exit;
 } else {
+    require_once "model.php";
+
+    $model = new Model('localhost', 'root', '', 'event_attendance_management_system');
+
     $_SESSION["title"] = "Current Event";
     $_SESSION["current_page"] = "current_event";
 
