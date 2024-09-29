@@ -533,14 +533,14 @@ if (isset($_POST["set_to_current"])) {
 
         $name = $result_2->fetch_assoc()["name"];
 
+        event_logs("fas fa-calendar-check text-primary", "Current event set to \'" . $name . "\' successfully at " . date("F j, Y h:i a") . ".");
+
         $_SESSION["notification"] = [
             "title" => "Success!",
             "text" => "An event has been set to Current.",
             "icon" => "success",
         ];
     }
-
-    event_logs("fas fa-calendar-check text-primary", "Current event set to \'" . $name . "\' successfully at " . date("F j, Y h:i a") . ".");
 
     echo json_encode(true);
 }

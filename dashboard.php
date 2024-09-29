@@ -29,7 +29,7 @@ if (!isset($_SESSION["user_id"])) {
         $logs = $result->fetch_all(MYSQLI_ASSOC);
 
         $totalLogs = count($logs);
-        $logsPerPage = 5;
+        $logsPerPage = 10;
         $totalPages = ceil($totalLogs / $logsPerPage);
 
         $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
