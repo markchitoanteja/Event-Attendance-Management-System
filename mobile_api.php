@@ -67,7 +67,7 @@ if (isset($_POST["verify_login"])) {
             $query_3 = "SELECT * FROM `events` WHERE `status` = 'Current'";
             $result_3 = $model->query($query_3);
 
-            $current_event_data = ["no_data"];
+            $current_event_data = array_fill(0, 5, "no_data");
 
             if ($result_3->num_rows > 0) {
                 $current_event_data = [];
